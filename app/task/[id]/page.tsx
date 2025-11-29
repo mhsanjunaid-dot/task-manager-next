@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/app/components/Navbar";
 import { getTaskById, updateTask, deleteTask } from "@/lib/api/tasks";
+import { useParams } from "next/navigation";
 
 type TaskType = {
   id: number;
@@ -18,8 +19,10 @@ type TaskType = {
   completed?: boolean;
 };
 
-export default function TaskDetails({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function TaskDetails() {
+  const { id } = useParams() as { id: string };
+
+
   const router = useRouter();
 
   const [task, setTask] = useState<TaskType | null>(null);
@@ -38,9 +41,13 @@ export default function TaskDetails({ params }: { params: { id: string } }) {
   const [editStatus, setEditStatus] = useState("pending");
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) router.push("/");
-  }, [router]);
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    router.push("/login");
+    return;
+  }
+}, [router]);
+
 
   const validate = () => {
     if (!editTitle.trim()) return "Title required";
@@ -49,40 +56,47 @@ export default function TaskDetails({ params }: { params: { id: string } }) {
     return null;
   };
 
-  useEffect(() => {
-    if (!id) {
-      setError("No task ID provided");
+ useEffect(() => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    router.push("/login");
+    return;
+  }
+
+  if (!id) {
+    setError("No task ID provided");
+    setLoading(false);
+    return;
+  }
+
+  const load = async () => {
+    try {
+      setLoading(true);
+      const res = await getTaskById(id);
+      setTask(res.data);
+
+      setEditTitle(res.data.title || "");
+      setEditDescription(res.data.description || "");
+      setEditCategory(res.data.category || "");
+      setEditPriority(res.data.priority ?? 1);
+      setEditDeadline(
+        res.data.deadline
+          ? new Date(res.data.deadline).toISOString().slice(0, 16)
+          : ""
+      );
+      setEditStatus(res.data.status || "pending");
+
       setLoading(false);
-      return;
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch task");
+      setLoading(false);
     }
+  };
 
-    const load = async () => {
-      try {
-        setLoading(true);
-        const res = await getTaskById(id);
-        setTask(res.data);
+  load();
+}, [id]);
 
-        setEditTitle(res.data.title || "");
-        setEditDescription(res.data.description || "");
-        setEditCategory(res.data.category || "");
-        setEditPriority(res.data.priority ?? 1);
-        setEditDeadline(
-          res.data.deadline
-            ? new Date(res.data.deadline).toISOString().slice(0, 16)
-            : ""
-        );
-        setEditStatus(res.data.status || "pending");
-
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to fetch task");
-        setLoading(false);
-      }
-    };
-
-    load();
-  }, [id]);
 
   useEffect(() => {
     const updateCountdown = () => {
