@@ -1,8 +1,7 @@
 "use client";
-
 import { useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import api from "@/lib/api/api"; 
 
 export default function Signup() {
   const router = useRouter();
@@ -45,14 +44,11 @@ export default function Signup() {
     try {
       setLoading(true);
 
-      
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/signup`,
-        {
-          username: form.username,
-          password: form.password,
-        }
-      );
+      // ⭐ FIXED — using your global axios instance
+      await api.post("/auth/signup", {
+        username: form.username,
+        password: form.password,
+      });
 
       alert("Signup successful! Please login.");
       router.push("/login");
