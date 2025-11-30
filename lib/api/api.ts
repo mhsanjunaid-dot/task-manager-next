@@ -3,14 +3,14 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL, // ✅ no localhost fallback
+  baseURL: process.env.NEXT_PUBLIC_API_URL, 
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
 });
 
-// Attach token on every request (client-side only)
+
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {

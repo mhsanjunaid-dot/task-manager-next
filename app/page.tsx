@@ -3,6 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import api from "@/lib/api/api";
 
 export default function Signup() {
   const router = useRouter();
@@ -53,7 +54,8 @@ export default function Signup() {
     try {
       setLoading(true);
 
-      await axios.post("http://127.0.0.1:8000/auth/signup", form);
+      await api.post("/auth/signup", form);
+
 
       alert("Signup successful! Please login.");
       router.push("/login");
