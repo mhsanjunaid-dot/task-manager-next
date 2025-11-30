@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api/api"; 
 
+
 export default function Signup() {
   const router = useRouter();
 
@@ -44,11 +45,9 @@ export default function Signup() {
     try {
       setLoading(true);
 
-      // ⭐ FIXED — using your global axios instance
-      await api.post("/auth/signup", {
-        username: form.username,
-        password: form.password,
-      });
+      
+      await api.post("/auth/signup", form);
+
 
       alert("Signup successful! Please login.");
       router.push("/login");
