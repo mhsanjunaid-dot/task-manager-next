@@ -45,15 +45,20 @@ export default function Signup() {
     try {
       setLoading(true);
 
+      
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/signup`,
-        form
+        {
+          username: form.username,
+          password: form.password,
+        }
       );
 
       alert("Signup successful! Please login.");
       router.push("/login");
 
     } catch (err: any) {
+      console.log("SIGNUP ERROR:", err);
       setErrors({
         ...errors,
         general: err?.response?.data?.detail || "Signup failed",
@@ -70,9 +75,7 @@ export default function Signup() {
           Create Account
         </h2>
 
-        {/* Inputs */}
         <div className="mt-6 space-y-4">
-
           <div>
             <label className="block text-sm font-medium mb-1">Username</label>
             <input
@@ -107,7 +110,6 @@ export default function Signup() {
             <p className="text-red-500 text-sm">{errors.general}</p>
           )}
 
-          {/* Button */}
           <button
             onClick={handleSignup}
             disabled={loading}
