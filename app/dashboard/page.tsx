@@ -32,17 +32,17 @@ const extractError = (err: any) => {
 
   if (!detail) return "Something went wrong";
 
-  // detail is array of FastAPI error objects
+  
   if (Array.isArray(detail)) {
     return detail.map((d) => d.msg).join(", ");
   }
 
-  // detail is single object
+  
   if (typeof detail === "object") {
     return detail.msg || JSON.stringify(detail);
   }
 
-  // detail is a plain string
+  
   return String(detail);
 };
 
@@ -100,7 +100,7 @@ const extractError = (err: any) => {
     });
   } catch (err: any) {
 
-    // keep previous field errors + add general error
+    
     setErrors((prev) => ({
       ...prev,
       general: extractError(err),
@@ -109,7 +109,7 @@ const extractError = (err: any) => {
     return;
   }
 
-  // reset inputs
+  
   setTitle("");
   setDescription("");
   setCategory("");
